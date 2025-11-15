@@ -73,8 +73,8 @@ cp .env.example .env
 - Copia las credenciales a `.env`
 
 #### APIs de IA (Opcional - usa las incluidas o configura las tuyas)
-- **Google Gemini**: [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **OpenAI**: [OpenAI API Keys](https://platform.openai.com/api-keys)
+- **Google Gemini**: [Google AI Studio](https://makersuite.google.com/app/apikey) - API gratuita
+- **OpenAI**: [OpenAI API Keys](https://platform.openai.com/api-keys) - Requiere cuenta con créditos
 
 ```env
 # Firebase Configuration (REQUERIDO)
@@ -281,31 +281,15 @@ npm install
 - [API de Gemini](docs/gemini-integration.md) - 🔒 **Preconfigurado**
 - [Deployment](docs/deployment.md)
 
-## 🤝 Contribuir
 
-1. Fork el proyecto
-2. Crear rama feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit cambios (`git commit -m 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abrir Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
 
 ## 👨‍💻 Autor
 
-**Alan Colimodio**
-- Email: alan.colimodio@ejemplo.com
-- LinkedIn: [Alan Colimodio](https://linkedin.com/in/alancolimodio)
-
-## 🙏 Agradecimientos
-
-- Google Gemini y OpenAI por las APIs de IA
-- Firebase por la infraestructura
-- Expo por las herramientas de desarrollo
-- React Native community
+**Alan Colimodio**  
+Trabajo Final de Grado - Ingeniería en Sistemas  
+Universidad [Nombre de tu Universidad]  
+2024
 
 ---
 
-⭐ **¡Dale una estrella si te gusta el proyecto!** ⭐
+📚 **Proyecto académico desarrollado como trabajo final de grado**
