@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear Datos de Ejemplo</title>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWUirrft8b_q0KYypYSfq0_khv2D00NDY",
+            authDomain: "cerebritos-app.firebaseapp.com",
+            projectId: "cerebritos-app",
+            storageBucket: "cerebritos-app.firebasestorage.app",
+            messagingSenderId: "277846906359",
+            appId: "1:277846906359:web:45b1e3858c48d76a118af2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function createSampleData() {
+            try {
+                document.getElementById('result').innerHTML = '<p>🔄 Creando datos de ejemplo...</p>';
+
+                // 1. Crear usuario padre
+                const parentRef = await addDoc(collection(db, 'usuarios'), {
+                    email: 'padre@ejemplo.com',
+                    perfil: {
+                        nombre: 'Carlos',
+                        apellido: 'González'
+                    },
+                    tipoUsuario: 'padre',
+                    fechaCreacion: new Date(),
+                    activo: true
+                });
+
+                // 2. Crear usuario hijo
+                const childRef = await addDoc(collection(db, 'usuarios'), {
+                    email: 'estudiante@ejemplo.com',
+                    perfil: {
+                        nombre: 'Ana',
+                        apellido: 'González',
+                        grado: '5to Grado'
+                    },
+                    tipoUsuario: 'estudiante',
+                    fechaCreacion: new Date(),
+                    activo: true,
+                    gamificacion: {
+                        puntosTotal: 250,
+                        nivelActual: 3,
+                        insignias: [],
+                        diasRacha: 5
+                    }
+                });
+
+                // 3. Crear vínculo padre-hijo
+                await addDoc(collection(db, 'vinculosPadreHijo'), {
+                    idPadre: parentRef.id,
+                    idHijo: childRef.id,
+                    estado: 'activo',
+                    fechaVinculacion: new Date(),
+                    codigoVinculo: 'ABC123'
+                });
+
+                // 4. Crear progreso de temas (últimos 7 días)
+                const progressData = [
+                    { tema: 'fracciones', puntaje: 85, fecha: -1 },
+                    { tema: 'decimales', puntaje: 92, fecha: -2 },
+                    { tema: 'fracciones', puntaje: 78, fecha: -3 },
+                    { tema: 'sistema solar', puntaje: 95, fecha: -4 },
+                    { tema: 'decimales', puntaje: 88, fecha: -5 }
+                ];
+
+                for (const progress of progressData) {
+                    const fecha = new Date();
+                    fecha.setDate(fecha.getDate() + progress.fecha);
+                    
+                    await addDoc(collection(db, 'progresoTemas'), {
+                        idUsuario: childRef.id,
+                        idMateria: progress.tema.includes('sistema') ? 'ciencias' : 'matematicas',
+                        idTema: progress.tema,
+                        puntaje: progress.puntaje,
+                        puntosObtenidos: Math.floor(progress.puntaje / 10),
+                        fechaCompletado: fecha,
+                        completado: progress.puntaje >= 70
+                    });
+                }
+
+                // 5. Crear insignias
+                const badges = [
+                    { tipo: 'primer_quiz', nombre: 'Primer Quiz', icono: '🎯' },
+                    { tipo: 'nivel', nombre: 'Nivel 3', icono: '⭐' },
+                    { tipo: 'racha', nombre: 'Racha de 5 días', icono: '🔥' }
+                ];
+
+                for (const badge of badges) {
+                    await addDoc(collection(db, 'insignias'), {
+                        idUsuario: childRef.id,
+                        tipo: badge.tipo,
+                        nombre: badge.nombre,
+                        descripcion: `Insignia ${badge.nombre}`,
+                        icono: badge.icono,
+                        fechaObtenida: new Date()
+                    });
+                }
+
+                document.getElementById('result').innerHTML = `
+                    <div style="color: green;">
+                        <h3>✅ Datos de ejemplo creados exitosamente!</h3>
+                        <p><strong>Padre ID:</strong> ${parentRef.id}</p>
+                        <p><strong>Hijo ID:</strong> ${childRef.id}</p>
+                        <p><strong>Email del padre:</strong> padre@ejemplo.com</p>
+                        <p><strong>Email del hijo:</strong> estudiante@ejemplo.com</p>
+                        
+                        <h4>📊 Datos creados:</h4>
+                        <ul>
+                            <li>✅ Usuario padre (Carlos González)</li>
+                            <li>✅ Usuario hijo (Ana González)</li>
+                            <li>✅ Vínculo padre-hijo</li>
+                            <li>✅ ${progressData.length} registros de progreso</li>
+                            <li>✅ ${badges.length} insignias</li>
+                        </ul>
+                        
+                        <h4>🔑 Para probar el dashboard:</h4>
+                        <p>Usa <strong>padre@ejemplo.com</strong> como email en el login del dashboard web.</p>
+                        <p><em>Nota: También necesitas crear esta cuenta en Firebase Auth para que funcione el login.</em></p>
+                    </div>
+                `;
+
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+
+        window.createSampleData = createSampleData;
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        button { background: #4CAF50; color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #45a049; }
+        #result { margin-top: 20px; padding: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>📊 Crear Datos de Ejemplo</h1>
+    <p>Este script creará un padre, un hijo, los vinculará y agregará datos de progreso de ejemplo.</p>
+    
+    <button onclick="createSampleData()">🚀 Crear Datos de Ejemplo</button>
+    
+    <div id="result"></div>
+</body>
+</html>

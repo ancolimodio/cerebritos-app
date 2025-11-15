@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vincular Padre e Hijo</title>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWUirrft8b_q0KYypYSfq0_khv2D00NDY",
+            authDomain: "cerebritos-app.firebaseapp.com",
+            projectId: "cerebritos-app",
+            storageBucket: "cerebritos-app.firebasestorage.app",
+            messagingSenderId: "277846906359",
+            appId: "1:277846906359:web:45b1e3858c48d76a118af2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function createParentUser() {
+            try {
+                const parentData = {
+                    email: document.getElementById('parentEmail').value,
+                    perfil: {
+                        nombre: document.getElementById('parentName').value,
+                        apellido: document.getElementById('parentLastName').value
+                    },
+                    tipoUsuario: 'padre',
+                    fechaCreacion: new Date(),
+                    activo: true
+                };
+
+                const docRef = await addDoc(collection(db, 'usuarios'), parentData);
+                document.getElementById('parentResult').innerHTML = `<p style="color: green;">✅ Padre creado con ID: ${docRef.id}</p>`;
+                document.getElementById('parentId').value = docRef.id;
+            } catch (error) {
+                document.getElementById('parentResult').innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function createChildUser() {
+            try {
+                const childData = {
+                    email: document.getElementById('childEmail').value,
+                    perfil: {
+                        nombre: document.getElementById('childName').value,
+                        apellido: document.getElementById('childLastName').value,
+                        grado: document.getElementById('childGrade').value
+                    },
+                    tipoUsuario: 'estudiante',
+                    fechaCreacion: new Date(),
+                    activo: true,
+                    gamificacion: {
+                        puntosTotal: 0,
+                        nivelActual: 1,
+                        insignias: [],
+                        diasRacha: 0
+                    }
+                };
+
+                const docRef = await addDoc(collection(db, 'usuarios'), childData);
+                document.getElementById('childResult').innerHTML = `<p style="color: green;">✅ Hijo creado con ID: ${docRef.id}</p>`;
+                document.getElementById('childId').value = docRef.id;
+            } catch (error) {
+                document.getElementById('childResult').innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function linkParentChild() {
+            try {
+                const parentId = document.getElementById('parentId').value;
+                const childId = document.getElementById('childId').value;
+
+                if (!parentId || !childId) {
+                    throw new Error('Necesitas crear primero el padre y el hijo');
+                }
+
+                const linkData = {
+                    idPadre: parentId,
+                    idHijo: childId,
+                    estado: 'activo',
+                    fechaVinculacion: new Date(),
+                    codigoVinculo: Math.random().toString(36).substring(2, 8).toUpperCase()
+                };
+
+                const docRef = await addDoc(collection(db, 'vinculosPadreHijo'), linkData);
+                document.getElementById('linkResult').innerHTML = `<p style="color: green;">✅ Vínculo creado exitosamente con ID: ${docRef.id}</p>`;
+            } catch (error) {
+                document.getElementById('linkResult').innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function showExistingUsers() {
+            try {
+                const usersSnapshot = await getDocs(collection(db, 'usuarios'));
+                let html = '<h3>Usuarios Existentes:</h3>';
+                
+                usersSnapshot.forEach((doc) => {
+                    const user = doc.data();
+                    html += `<div style="border: 1px solid #ddd; padding: 10px; margin: 5px;">
+                        <strong>ID:</strong> ${doc.id}<br>
+                        <strong>Nombre:</strong> ${user.perfil?.nombre} ${user.perfil?.apellido}<br>
+                        <strong>Email:</strong> ${user.email}<br>
+                        <strong>Tipo:</strong> ${user.tipoUsuario}<br>
+                        ${user.perfil?.grado ? `<strong>Grado:</strong> ${user.perfil.grado}<br>` : ''}
+                    </div>`;
+                });
+                
+                document.getElementById('existingUsers').innerHTML = html;
+            } catch (error) {
+                document.getElementById('existingUsers').innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        window.createParentUser = createParentUser;
+        window.createChildUser = createChildUser;
+        window.linkParentChild = linkParentChild;
+        window.showExistingUsers = showExistingUsers;
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .section { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #45a049; }
+        .danger { background: #f44336; }
+        .danger:hover { background: #da190b; }
+    </style>
+</head>
+<body>
+    <h1>🔗 Sistema de Vinculación Padre-Hijo</h1>
+    
+    <button onclick="showExistingUsers()" style="background: #2196F3;">Ver Usuarios Existentes</button>
+    <div id="existingUsers"></div>
+
+    <div class="section">
+        <h2>👨‍👩‍👧‍👦 Crear Usuario Padre</h2>
+        <input type="text" id="parentName" placeholder="Nombre del padre">
+        <input type="text" id="parentLastName" placeholder="Apellido del padre">
+        <input type="email" id="parentEmail" placeholder="Email del padre">
+        <button onclick="createParentUser()">Crear Padre</button>
+        <input type="text" id="parentId" placeholder="ID del padre (se llena automáticamente)" readonly>
+        <div id="parentResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>👶 Crear Usuario Hijo</h2>
+        <input type="text" id="childName" placeholder="Nombre del hijo">
+        <input type="text" id="childLastName" placeholder="Apellido del hijo">
+        <input type="email" id="childEmail" placeholder="Email del hijo">
+        <select id="childGrade">
+            <option>1er Grado</option>
+            <option>2do Grado</option>
+            <option>3er Grado</option>
+            <option>4to Grado</option>
+            <option selected>5to Grado</option>
+            <option>6to Grado</option>
+        </select>
+        <button onclick="createChildUser()">Crear Hijo</button>
+        <input type="text" id="childId" placeholder="ID del hijo (se llena automáticamente)" readonly>
+        <div id="childResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>🔗 Vincular Padre e Hijo</h2>
+        <p>Los IDs se llenan automáticamente al crear los usuarios arriba, o puedes ingresarlos manualmente si ya existen.</p>
+        <button onclick="linkParentChild()">Crear Vínculo</button>
+        <div id="linkResult"></div>
+    </div>
+
+    <div class="section">
+        <h3>📋 Instrucciones:</h3>
+        <ol>
+            <li><strong>Ver usuarios existentes</strong> para verificar si ya tienes usuarios creados</li>
+            <li><strong>Crear padre:</strong> Llena los datos y haz clic en "Crear Padre"</li>
+            <li><strong>Crear hijo:</strong> Llena los datos y haz clic en "Crear Hijo"</li>
+            <li><strong>Vincular:</strong> Haz clic en "Crear Vínculo" para conectar padre e hijo</li>
+            <li><strong>Probar:</strong> Usa el email del padre para iniciar sesión en el dashboard web</li>
+        </ol>
+        
+        <h3>🔑 Para autenticación:</h3>
+        <p>Los usuarios creados aquí son solo para la base de datos. Para el login necesitas crear las cuentas en Firebase Auth también, o usar cuentas existentes.</p>
+    </div>
+</body>
+</html>

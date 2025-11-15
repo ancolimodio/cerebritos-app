@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Usuarios solo pueden acceder a sus propios datos
+    match /usuarios/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Materias solo pueden ser accedidas por su propietario
+    match /materias/{materiaId} {
+      allow read, write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Temas solo pueden ser accedidos por el propietario de la materia
+    match /temas/{temaId} {
+      allow read, write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Cuestionarios pueden ser leídos por el propietario
+    match /cuestionarios/{cuestionarioId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Intentos de cuestionario solo por el propietario
+    match /intentosCuestionario/{intentoId} {
+      allow read, write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Vínculos padre-hijo
+    match /vinculosPadreHijo/{vinculoId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.idPadre == request.auth.uid || 
+         resource.data.idHijo == request.auth.uid);
+    }
+    
+    // Logros de usuario
+    match /logrosUsuario/{logroId} {
+      allow read, write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Sesiones de estudio
+    match /sesionesEstudio/{sesionId} {
+      allow read, write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Reportes - padres pueden ver reportes de sus hijos
+    match /reportes/{reporteId} {
+      allow read: if request.auth != null && 
+        (resource.data.idUsuario == request.auth.uid || 
+         resource.data.idPadre == request.auth.uid);
+      allow write: if request.auth != null && 
+        resource.data.idUsuario == request.auth.uid;
+    }
+    
+    // Función auxiliar para verificar si es padre del usuario
+    function isParentOf(parentId, childId) {
+      return exists(/databases/$(database)/documents/vinculosPadreHijo/$(parentId + '_' + childId)) &&
+        get(/databases/$(database)/documents/vinculosPadreHijo/$(parentId + '_' + childId)).data.estado == 'aprobado';
+    }
+  }
+}

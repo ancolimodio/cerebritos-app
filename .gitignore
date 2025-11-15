@@ -1,0 +1,9 @@
+﻿node_modules/
+.expo/
+dist/
+build/
+*.log
+.env
+.cache/
+*.backup
+firebase-functions/lib/

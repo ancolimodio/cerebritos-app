@@ -1,0 +1,279 @@
+# 🧠 Cerebritos App
+
+**Plataforma educativa inteligente para estudiantes de primaria con seguimiento parental**
+
+Una aplicación completa que combina aprendizaje gamificado para estudiantes y monitoreo detallado para padres, potenciada por inteligencia artificial.
+
+## 📱 Características Principales
+
+### Para Estudiantes (App Móvil)
+- 🎯 **Cuestionarios Interactivos** - Preguntas generadas por IA sobre múltiples materias
+- 🏆 **Sistema de Gamificación** - Puntos, niveles, insignias y rachas de estudio
+- 📚 **Múltiples Materias** - Matemáticas, Ciencias, Lengua, Historia y más
+- 🤖 **IA Dual** - Dos agentes de IA: Google Gemini y OpenAI, intercambiables por configuración
+- 📊 **Progreso en Tiempo Real** - Seguimiento automático del rendimiento
+- 🎨 **Interfaz Amigable** - Diseño intuitivo adaptado para niños
+
+### Para Padres (Dashboard Web)
+- 📈 **Monitoreo Completo** - Progreso detallado por materia y tema
+- ⏱️ **Tiempo de Estudio** - Tracking automático de horas dedicadas
+- 🎯 **Estadísticas Avanzadas** - Aciertos, porcentajes, notas promedio
+- 📅 **Actividad Reciente** - Historial de cuestionarios realizados
+- 🏅 **Insignias Obtenidas** - Logros y reconocimientos del estudiante
+- 📊 **Gráficos Interactivos** - Visualización del rendimiento semanal
+- 🎯 **Metas y Objetivos** - Seguimiento de objetivos semanales
+
+## 🏗️ Arquitectura del Sistema
+
+```
+cerebritos-app/
+├── mobile-app/          # App móvil (React Native + Expo)
+├── web-dashboard/       # Dashboard web (React + TypeScript)
+├── firebase-functions/  # Backend (Firebase Functions)
+├── scripts/            # Scripts de configuración
+└── docs/              # Documentación
+```
+
+### Tecnologías Utilizadas
+- **Frontend Móvil**: React Native, Expo, TypeScript
+- **Frontend Web**: React, TypeScript, Recharts
+- **Backend**: Firebase (Firestore, Authentication, Functions)
+- **IA**: Google Gemini API + OpenAI API (intercambiables)
+- **Hosting**: Firebase Hosting
+
+## 🚀 Instalación y Configuración
+
+### Prerrequisitos
+- Node.js (v16 o superior)
+- npm o yarn
+- Git
+- Expo CLI (`npm install -g @expo/cli`)
+
+### 1. Clonar el Repositorio
+```bash
+git clone https://github.com/tu-usuario/cerebritos-app.git
+cd cerebritos-app
+```
+
+> ⚠️ **Nota Importante**: El proyecto ya incluye todas las credenciales de Firebase y Google Gemini configuradas. No necesitas crear cuentas adicionales ni configurar APIs.
+
+### 2. Instalar Dependencias
+
+#### App Móvil
+```bash
+cd mobile-app
+npm install
+```
+
+#### Dashboard Web
+```bash
+cd web-dashboard
+npm install
+```
+
+#### Firebase Functions
+```bash
+cd firebase-functions
+npm install
+```
+
+### 3. Configuración Automática
+El proyecto está preconfigurado con:
+- ✅ **Firebase**: Base de datos y autenticación ya configuradas
+- ✅ **IA Dual**: Google Gemini y OpenAI configurados y listos para usar
+- ✅ **Datos de ejemplo**: Usuarios y contenido de prueba incluidos
+
+No requiere configuración adicional.
+
+## 🏃‍♂️ Ejecutar la Aplicación
+
+### App Móvil (Desarrollo)
+```bash
+cd mobile-app
+npm start
+# o
+expo start
+```
+
+Opciones para probar:
+- **Expo Go**: Escanear QR con la app Expo Go
+- **Simulador iOS**: Presionar `i`
+- **Emulador Android**: Presionar `a`
+- **Web**: Presionar `w`
+
+### Dashboard Web (Desarrollo)
+```bash
+cd web-dashboard
+npm start
+```
+Abrir http://localhost:3000
+
+### Firebase Functions (Desarrollo)
+```bash
+cd firebase-functions
+npm run serve
+```
+
+## 📦 Compilación para Producción
+
+> 📱 **App Móvil**: Para uso personal, recomendamos probar con Expo Go
+
+### App Móvil (Opcional)
+```bash
+cd mobile-app
+
+# Para Android (APK) - requiere cuenta Expo
+expo build:android
+
+# Para iOS - requiere cuenta Apple Developer
+expo build:ios
+```
+
+### Dashboard Web (Opcional)
+```bash
+cd web-dashboard
+npm run build
+```
+
+> ⚠️ **Nota**: El deploy a producción requiere permisos del proyecto Firebase original.
+
+## 🗄️ Estructura de la Base de Datos
+
+### Colecciones Firestore
+```
+usuarios/
+├── {userId}
+    ├── email: string
+    ├── perfil: { nombre, apellido, grado }
+    ├── tipoUsuario: "estudiante" | "padre"
+    └── gamificacion: { puntosTotal, nivelActual, diasRacha }
+
+progresoTemas/
+├── {progressId}
+    ├── idUsuario: string
+    ├── idMateria: string
+    ├── idTema: string
+    ├── puntaje: number
+    ├── completado: boolean
+    └── fechaCompletado: timestamp
+
+insignias/
+├── {badgeId}
+    ├── idUsuario: string
+    ├── tipo: string
+    ├── nombre: string
+    ├── descripcion: string
+    └── fechaObtenida: timestamp
+
+vinculosPadreHijo/
+├── {linkId}
+    ├── idPadre: string
+    ├── idHijo: string
+    ├── estado: "activo"
+    └── fechaVinculacion: timestamp
+```
+
+## 👥 Cuentas de Prueba
+
+> 🎆 **Listo para usar**: Las siguientes cuentas ya están creadas en la base de datos
+
+### Estudiante
+- **Email**: estudiante@cerebritos.com
+- **Password**: estudiante123
+- **Perfil**: Ana Estudiante, 5to Grado
+- **Datos**: Incluye progreso en Matemáticas y Ciencias
+
+### Padre
+- **Email**: padre@cerebritos.com
+- **Password**: padre123
+- **Perfil**: Carlos Padre
+- **Vinculación**: Ya conectado con la cuenta estudiante
+
+### Funcionalidades Incluidas
+- ✅ Cuestionarios completados
+- ✅ Insignias obtenidas
+- ✅ Progreso por materias
+- ✅ Estadísticas de tiempo
+- ✅ Vínculo padre-hijo activo
+
+## 🔧 Scripts Útiles
+
+### Configuración Inicial
+```bash
+# Ejecutar setup completo (opcional)
+./scripts/setup.sh  # Linux/Mac
+./scripts/setup.bat # Windows
+
+# Cambiar agente de IA (Gemini ↔️ OpenAI)
+./scripts/change-ai-engine.bat
+```
+
+> 📝 **Nota**: Los datos de ejemplo y vínculos ya están configurados en la base de datos.
+> 🤖 **IA**: Por defecto usa Google Gemini, pero puedes cambiar a OpenAI con el script.
+
+### Desarrollo
+```bash
+# Instalar todas las dependencias
+npm run install:all
+
+# Ejecutar todo en desarrollo
+npm run dev:all
+
+# Limpiar node_modules
+npm run clean
+```
+
+## 🐛 Solución de Problemas
+
+### Problemas Comunes
+
+**Error de Firebase**: Las credenciales están preconfiguradas. Si hay problemas, verificar conexión a internet.
+
+**Error de Expo**: Limpiar cache
+```bash
+expo r -c
+```
+
+**Error de dependencias**: Reinstalar
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Error de IA**: Las API keys de Gemini y OpenAI están incluidas. Si hay problemas, puede ser límite de uso diario.
+
+## 📚 Documentación Adicional
+
+- [Guía de Desarrollo](docs/development.md)
+- [Configuración de Firebase](docs/firebase-setup.md) - 🔒 **Preconfigurado**
+- [API de Gemini](docs/gemini-integration.md) - 🔒 **Preconfigurado**
+- [Deployment](docs/deployment.md)
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crear rama feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abrir Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
+
+## 👨‍💻 Autor
+
+**Alan Colimodio**
+- Email: alan.colimodio@ejemplo.com
+- LinkedIn: [Alan Colimodio](https://linkedin.com/in/alancolimodio)
+
+## 🙏 Agradecimientos
+
+- Google Gemini y OpenAI por las APIs de IA
+- Firebase por la infraestructura
+- Expo por las herramientas de desarrollo
+- React Native community
+
+---
+
+⭐ **¡Dale una estrella si te gusta el proyecto!** ⭐
