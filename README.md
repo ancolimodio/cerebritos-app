@@ -51,13 +51,45 @@ cerebritos-app/
 
 ### 1. Clonar el Repositorio
 ```bash
-git clone https://github.com/tu-usuario/cerebritos-app.git
+git clone https://github.com/ancolimodio/cerebritos-app.git
 cd cerebritos-app
 ```
 
-> ⚠️ **Nota Importante**: El proyecto ya incluye todas las credenciales de Firebase y Google Gemini configuradas. No necesitas crear cuentas adicionales ni configurar APIs.
+### 2. Configurar Variables de Entorno
 
-### 2. Instalar Dependencias
+> ⚠️ **IMPORTANTE**: Debes configurar las API keys antes de ejecutar la aplicación.
+
+1. Copia el archivo de ejemplo:
+```bash
+cp .env.example .env
+```
+
+2. Edita el archivo `.env` y agrega tus propias API keys:
+
+#### Firebase (Requerido)
+- Ve a [Firebase Console](https://console.firebase.google.com)
+- Crea un nuevo proyecto
+- Habilita Authentication y Firestore
+- Copia las credenciales a `.env`
+
+#### APIs de IA (Opcional - usa las incluidas o configura las tuyas)
+- **Google Gemini**: [Google AI Studio](https://makersuite.google.com/app/apikey)
+- **OpenAI**: [OpenAI API Keys](https://platform.openai.com/api-keys)
+
+```env
+# Firebase Configuration (REQUERIDO)
+FIREBASE_API_KEY=tu_firebase_api_key_aqui
+FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+FIREBASE_PROJECT_ID=tu_proyecto_id
+
+# AI APIs (OPCIONAL - ya incluidas en el código)
+GEMINI_API_KEY=tu_gemini_api_key_aqui
+OPENAI_API_KEY=tu_openai_api_key_aqui
+```
+
+> 💡 **Tip**: Si no configuras las APIs de IA, la aplicación usará las credenciales incluidas en el código.
+
+### 3. Instalar Dependencias
 
 #### App Móvil
 ```bash
