@@ -219,19 +219,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     setLinkLoading(false);
   };
 
-  const handleCreateSample = async () => {
-    setLinkLoading(true);
-    const result = await UserService.createSampleChild(user.id);
-    
-    if (result.success) {
-      setLinkMessage('✅ Hijo de ejemplo creado exitosamente');
-      loadData();
-    } else {
-      setLinkMessage(`❌ ${result.error}`);
-    }
-    
-    setLinkLoading(false);
-  };
+
 
   if (loading) {
     return <div className="loading">Cargando dashboard...</div>;
@@ -251,13 +239,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                 onClick={() => setShowLinkForm(true)}
               >
                 🔗 Vincular Hijo
-              </button>
-              <button 
-                className="btn-secondary" 
-                onClick={handleCreateSample}
-                disabled={linkLoading}
-              >
-                📊 Crear Datos de Ejemplo
               </button>
             </div>
           ) : (
