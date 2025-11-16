@@ -286,10 +286,4 @@ npm install
 ## 👨‍💻 Autor
 
 **Alan Colimodio**  
-Trabajo Final de Grado - Ingeniería en Sistemas  
-Universidad [Nombre de tu Universidad]  
-2024
 
----
-
-📚 **Proyecto académico desarrollado como trabajo final de grado**
