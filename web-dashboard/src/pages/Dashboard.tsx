@@ -21,6 +21,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [weeklyGoals, setWeeklyGoals] = useState<any[]>([]);
   const [studyTime, setStudyTime] = useState({ total: 0, thisWeek: 0 });
+  
+  // Estados para eliminar cuenta
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [childToDelete, setChildToDelete] = useState<User | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState('');
 
   useEffect(() => {
     loadData();
@@ -42,6 +48,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       if (childrenData.length > 0) {
         console.log('Selected child:', childrenData[0]);
         setSelectedChild(childrenData[0]);
+      } else {
+        setSelectedChild(null);
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -219,7 +227,48 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     setLinkLoading(false);
   };
 
+  const handleDeleteClick = (child: User) => {
+    setChildToDelete(child);
+    setShowDeleteModal(true);
+    setDeleteMessage('');
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!childToDelete) return;
+
+    setDeleteLoading(true);
+    setDeleteMessage('');
+
+    try {
+      const result = await UserService.deleteChildAccount(user.id, childToDelete.id);
+      
+      if (result.success) {
+        setDeleteMessage('✅ Cuenta eliminada exitosamente');
+        
+        // Esperar un poco para que el usuario vea el mensaje
+        setTimeout(() => {
+          setShowDeleteModal(false);
+          setChildToDelete(null);
+          setDeleteMessage('');
+          
+          // Recargar los datos
+          loadData();
+        }, 1500);
+      } else {
+        setDeleteMessage(`❌ ${result.error}`);
+      }
+    } catch (error: any) {
+      setDeleteMessage(`❌ Error: ${error.message || 'Error al eliminar la cuenta'}`);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setChildToDelete(null);
+    setDeleteMessage('');
+  };
 
   if (loading) {
     return <div className="loading">Cargando dashboard...</div>;
@@ -331,6 +380,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             onClick={() => setCurrentView('settings')}
           >
             ⚙️ Configuración
+          </div>
+          <div 
+            className={`nav-item ${currentView === 'manage-children' ? 'active' : ''}`}
+            onClick={() => setCurrentView('manage-children')}
+          >
+            👨‍👩‍👧‍👦 Gestionar Hijos
           </div>
         </nav>
 
@@ -709,8 +764,121 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               </div>
             </div>
           )}
+
+          {currentView === 'manage-children' && (
+            <div className="view-content">
+              <h2>Gestionar Hijos</h2>
+              <div className="manage-children-container">
+                <div className="card">
+                  <div className="card-header">
+                    <h3>Hijos Vinculados</h3>
+                  </div>
+                  <div className="card-body">
+                    {children.map((child) => (
+                      <div key={child.id} className="child-management-card">
+                        <div className="child-info">
+                          <div className="child-avatar">
+                            {child.perfil.nombre.charAt(0)}{child.perfil.apellido.charAt(0)}
+                          </div>
+                          <div className="child-details">
+                            <h4>{child.perfil.nombre} {child.perfil.apellido}</h4>
+                            <p className="child-email">{child.email}</p>
+                            {child.perfil.grado && (
+                              <p className="child-grade">📚 {child.perfil.grado}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="child-actions">
+                          <button 
+                            className="btn-delete"
+                            onClick={() => handleDeleteClick(child)}
+                          >
+                            🗑️ Eliminar Cuenta
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="card">
+                  <div className="card-header">
+                    <h3>Vincular Nuevo Hijo</h3>
+                  </div>
+                  <div className="card-body">
+                    <form onSubmit={handleLinkChild} className="link-form-inline">
+                      <input
+                        type="email"
+                        placeholder="Email del hijo (ej: estudiante@ejemplo.com)"
+                        value={childEmail}
+                        onChange={(e) => setChildEmail(e.target.value)}
+                        required
+                        disabled={linkLoading}
+                      />
+                      <button type="submit" disabled={linkLoading} className="btn-primary">
+                        {linkLoading ? 'Vinculando...' : '🔗 Vincular'}
+                      </button>
+                    </form>
+                    
+                    {linkMessage && (
+                      <div className={`message ${linkMessage.includes('✅') ? 'success' : 'error'}`}>
+                        {linkMessage}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
+
+      {/* Modal de confirmación de eliminación */}
+      {showDeleteModal && childToDelete && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>⚠️ Confirmar Eliminación de Cuenta</h3>
+            </div>
+            <div className="modal-body">
+              <p className="warning-text">
+                ¿Estás seguro que deseas eliminar la cuenta de <strong>{childToDelete.perfil.nombre} {childToDelete.perfil.apellido}</strong>?
+              </p>
+              <div className="warning-details">
+                <p>⚠️ Esta acción realizará lo siguiente:</p>
+                <ul>
+                  <li>Se eliminará el vínculo entre tu cuenta y la del hijo</li>
+                  <li>La cuenta del hijo será desactivada</li>
+                  <li>No podrás ver más el progreso de esta cuenta</li>
+                  <li>El historial de actividades se mantendrá por seguridad</li>
+                </ul>
+              </div>
+
+              {deleteMessage && (
+                <div className={`message ${deleteMessage.includes('✅') ? 'success' : 'error'}`}>
+                  {deleteMessage}
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="btn-cancel"
+                onClick={handleCancelDelete}
+                disabled={deleteLoading}
+              >
+                Cancelar
+              </button>
+              <button 
+                className="btn-confirm-delete"
+                onClick={handleConfirmDelete}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Eliminando...' : 'Sí, Eliminar Cuenta'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

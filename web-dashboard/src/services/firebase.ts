@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, orderBy, limit, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, orderBy, limit, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBWUirrft8b_q0KYypYSfq0_khv2D00NDY",
@@ -121,7 +121,8 @@ export class UserService {
     try {
       const vinculosQuery = query(
         collection(db, 'vinculosPadreHijo'),
-        where('idPadre', '==', parentId)
+        where('idPadre', '==', parentId),
+        where('estado', '==', 'activo')
       );
       
       const vinculosSnapshot = await getDocs(vinculosQuery);
@@ -187,6 +188,45 @@ export class UserService {
     } catch (error: any) {
       console.error('Error linking child:', error);
       return { success: false, error: error.message };
+    }
+  }
+
+  static async deleteChildAccount(parentId: string, childId: string) {
+    try {
+      console.log('Deleting child account:', { parentId, childId });
+
+      // 1. Buscar el vínculo padre-hijo
+      const vinculosQuery = query(
+        collection(db, 'vinculosPadreHijo'),
+        where('idPadre', '==', parentId),
+        where('idHijo', '==', childId),
+        where('estado', '==', 'activo')
+      );
+      
+      const vinculosSnapshot = await getDocs(vinculosQuery);
+      
+      if (vinculosSnapshot.empty) {
+        return { success: false, error: 'No se encontró el vínculo con este hijo' };
+      }
+
+      // 2. Eliminar el vínculo padre-hijo
+      for (const vinculoDoc of vinculosSnapshot.docs) {
+        await deleteDoc(doc(db, 'vinculosPadreHijo', vinculoDoc.id));
+        console.log('Deleted link:', vinculoDoc.id);
+      }
+
+      // 3. Desactivar la cuenta del hijo (eliminación lógica)
+      const childDocRef = doc(db, 'usuarios', childId);
+      await updateDoc(childDocRef, {
+        activo: false,
+        fechaEliminacion: new Date()
+      });
+      console.log('Deactivated child account:', childId);
+
+      return { success: true, message: 'Cuenta eliminada exitosamente' };
+    } catch (error: any) {
+      console.error('Error deleting child account:', error);
+      return { success: false, error: error.message || 'Error al eliminar la cuenta' };
     }
   }
 
