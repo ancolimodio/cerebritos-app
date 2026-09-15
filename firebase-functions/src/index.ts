@@ -9,7 +9,7 @@ const corsHandler = cors({ origin: true });
 
 // Inicializar OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'sk-test-key',
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
 
 // Función para generar cuestionarios con IA
