@@ -73,6 +73,9 @@ NO uses los scripts que citan `README.md` y `docs/development.md` (`install:all`
   (`src/components`, `android/`, `shared/`), scripts y CI que no existen (no hay `.github/`).
   Confiá en `docs/pendientes.md` y en el código, no en esos docs.
 - `docs/setup-guide.md` documenta el setup manual de Firebase (crear proyecto, Auth, Firestore).
+- `prompt-maestro.toml` configura el harness de agentes Prompt Maestro: por ahora solo pueden
+  escribir en `web-dashboard/src` (tests junto al código, `*.test.ts(x)`), con `tsc` y Jest como
+  gates. No lo modifiques desde un agente: el harness lo protege.
 - Idioma del proyecto: español (UI, comentarios, nombres de colecciones) — mantenelo.
 
 ## Mantenimiento (convención)

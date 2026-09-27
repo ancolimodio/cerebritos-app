@@ -1,0 +1,41 @@
+# Configuración de Prompt Maestro para este repositorio.
+# Por ahora los agentes solo trabajan sobre el panel web (web-dashboard/).
+
+stack = "TypeScript + React (Create React App) con Firebase Auth y Firestore"
+test_framework = "Jest + React Testing Library (react-scripts test)"
+rules_file = "AGENTS.md"
+
+code = [
+    "web-dashboard/src/**/*.ts",
+    "web-dashboard/src/**/*.tsx",
+    "web-dashboard/src/**/*.css",
+]
+tests = [
+    "web-dashboard/src/**/*.test.ts",
+    "web-dashboard/src/**/*.test.tsx",
+]
+
+# Infraestructura y dependencias: cambiarlas requiere a un humano.
+protected = [
+    "**/package.json",
+    "**/package-lock.json",
+    "firestore.rules",
+    "firebase.json",
+    ".firebaserc",
+]
+
+# apiKey web de Firebase: es pública por diseño (va en el cliente) y ya está en
+# web-dashboard/src/services/firebase.ts. Cualquier otro secreto sigue bloqueando.
+secret_allowlist = ["AIzaSyBWUirrft8b_q0KYypYSfq0_khv2D00NDY"]
+
+[gates]
+# Sin análisis de seguridad automático para JS: el Gate D queda en manos del Reviewer.
+D = []
+
+[[gates.B]]
+name = "tsc"
+argv = ["node", "web-dashboard/node_modules/typescript/bin/tsc", "--noEmit", "-p", "web-dashboard"]
+
+[[gates.C]]
+name = "jest"
+argv = ["npm", "--prefix", "web-dashboard", "test", "--", "--watchAll=false", "--passWithNoTests"]
