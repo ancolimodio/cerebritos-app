@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, orderBy, limit, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, orderBy, limit, addDoc, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBWUirrft8b_q0KYypYSfq0_khv2D00NDY",
@@ -82,8 +82,8 @@ export class AuthService {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Crear perfil en Firestore
-      await addDoc(collection(db, 'usuarios'), {
+      // Crear perfil en Firestore con el uid de Auth como id (consistente con la app móvil)
+      await setDoc(doc(db, 'usuarios', userCredential.user.uid), {
         ...userData,
         email,
         fechaCreacion: new Date(),
