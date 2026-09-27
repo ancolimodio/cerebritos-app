@@ -16,8 +16,10 @@ NO uses los scripts que citan `README.md` y `docs/development.md` (`install:all`
 | `web-dashboard/` (Create React App + TS) | `npm start` (http://localhost:3000); `npm run build` (→ `web-dashboard/build/`) |
 | `firebase-functions/` (TS → `lib/`, Node 20) | `npm run build` (tsc); `npm run serve` (emulador functions :5001); `npm run deploy` |
 
-- No hay tests en ningún subproyecto. `npm test` en web-dashboard es react-scripts (Jest) y entra
-  en watch con "No tests found". No hay lint configurado.
+- Tests: solo `web-dashboard/` tiene, con Jest (react-scripts) y junto al código (`*.test.ts(x)`,
+  por ahora `src/utils/tiempoEstudio.test.ts`). `npm test` entra en watch: para una corrida única,
+  `npm test -- --watchAll=false`. `mobile-app/` y `firebase-functions/` no tienen tests. No hay
+  lint configurado.
 - Emuladores (`firebase emulators:start` desde la raíz): auth 9099, functions 5001, firestore 8080,
   hosting 5000, UI habilitada (default :4000). El hosting sirve `web-dashboard/build`, así que corre
   `npm run build` ahí primero.

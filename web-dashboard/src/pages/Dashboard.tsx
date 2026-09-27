@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { AuthService, UserService, ProgressService, User, ProgresoTema, Insignia, Tema } from '../services/firebase';
+import { calcularTiempoEstudio } from '../utils/tiempoEstudio';
 
 interface DashboardProps {
   user: User;
@@ -142,15 +143,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       
       setRecentActivities(activities);
       
-      // Calcular tiempo de estudio con todos los datos
-      const totalTime = Math.max(allProgress.length * 15, 180); // Mínimo 3 horas
-      const weekTime = Math.max(weekProgress.length * 15, 45); // Mínimo 45 min
-      setStudyTime({ total: totalTime, thisWeek: weekTime });
+      // Calcular tiempo de estudio con todos los datos sin mínimos inventados
+      const tiempos = calcularTiempoEstudio(allProgress.length, weekProgress.length);
+      setStudyTime(tiempos);
       
       // Generar metas semanales usando datos de la semana
       setWeeklyGoals([
         { name: 'Completar 10 cuestionarios', current: weekProgress.length, target: 10, completed: weekProgress.length >= 10 },
-        { name: 'Estudiar 4 horas', current: Math.floor(weekTime / 60), target: 4, completed: weekTime >= 240 },
+        { name: 'Estudiar 4 horas', current: Math.floor(tiempos.thisWeek / 60), target: 4, completed: tiempos.thisWeek >= 240 },
         { name: 'Obtener 3 insignias', current: childBadges.length, target: 3, completed: childBadges.length >= 3 }
       ]);
       
@@ -340,7 +340,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               <h2>Progreso de {selectedChild?.perfil.nombre} {selectedChild?.perfil.apellido}</h2>
               {children.length > 1 && (
                 <select 
-                  value={selectedChild?.id || ''} 
+                  value={selectedChild?.id || ''}
                   onChange={(e) => {
                     const child = children.find(c => c.id === e.target.value);
                     setSelectedChild(child || null);

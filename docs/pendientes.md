@@ -29,6 +29,7 @@ Documento de trabajo con las funcionalidades a medio implementar o rotas. Se ata
    - `Dashboard.tsx:72-141` y `146-147` rellenan con ejemplos hardcodeados y estiman tiempo (`count * 15 min`) cuando no hay datos reales.
    - `App.tsx` (web) construye un `user` fake sin leer Firestore (perfil vacío).
    - Fix: leer perfil real desde Firestore y mostrar datos reales (o estado "sin datos").
+   - Avance 27/09/2026: el tiempo de estudio ya no usa mínimos inventados (3 h total, 45 min semanales); lo calcula `calcularTiempoEstudio` (`web-dashboard/src/utils/tiempoEstudio.ts`, con tests). Sigue estimando 15 min por registro hasta consumir `intentosCuestionario` (P-6). Los ejemplos hardcodeados y el `user` fake siguen pendientes.
 
 6. [ ] **P-6: Cloud Functions sin conectar**
    - `httpsCallable` importado pero nunca usado (`mobile/services/firebase.js:20`).
@@ -55,3 +56,4 @@ Documento de trabajo con las funcionalidades a medio implementar o rotas. Se ata
 - 15/09/2026: se purgaron API keys de OpenAI/Gemini del código e historial; se refactorizó a variables de entorno (`mobile-app/.env`).
 - 15/09/2026: se eliminó el token `ghp_...` de la URL del remote del repo padre.
 - 15/09/2026: **P-1 resuelto** — `AuthService.signUp` (web) ahora usa `setDoc` con el `uid` de Auth como id, consistente con la app móvil.
+- 27/09/2026: P-5 parcial — tiempo de estudio sin mínimos inventados; primer test del proyecto. Implementado por los agentes de Prompt Maestro (Gemini) y revisado a mano: se quitaron dos propiedades `disaster_fix` que el agente había inyectado fuera del plan.
